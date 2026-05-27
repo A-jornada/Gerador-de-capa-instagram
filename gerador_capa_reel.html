@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Capa | @segueovinisantos</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #0d0d1a; min-height: 100vh; }
+  body { background: #0d0d1a; font-family: 'DM Sans', sans-serif; color: #fff; min-height: 100vh; padding: 1.5rem 1rem 2rem; display: flex; flex-direction: column; align-items: center; }
+  h1 { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(151,231,0,0.7); font-weight: 600; margin-bottom: 1.5rem; }
+  .layout { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 700px; }
+  .controls { flex: 1; min-width: 240px; max-width: 320px; }
+  .ctrl-group { margin-bottom: 1.25rem; }
+  .ctrl-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  textarea {
+    width: 100%; min-height: 90px; resize: vertical;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    padding: 10px 12px; border-radius: 10px; line-height: 1.4;
+    border: 0.5px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); color: #fff;
+  }
+  textarea::placeholder { color: rgba(255,255,255,0.2); font-weight: 400; }
+  textarea:focus { outline: none; border-color: rgba(151,231,0,0.5); }
+  input[type=number] {
+    width: 80px; font-family: 'Space Mono', monospace; font-size: 14px;
+    text-align: center; padding: 8px; border-radius: 8px;
+    border: 0.5px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); color: #97e700;
+  }
+  input[type=number]:focus { outline: none; border-color: rgba(151,231,0,0.5); }
+  .day-row { display: flex; align-items: center; gap: 8px; }
+  .day-note { font-size: 11px; color: rgba(255,255,255,0.3); }
+  .toggle-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tog {
+    padding: 6px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    border: 0.5px solid rgba(255,255,255,0.15); background: transparent;
+    color: rgba(255,255,255,0.4); font-family: 'DM Sans', sans-serif; font-weight: 500;
+    transition: all 0.15s;
+  }
+  .tog.active { background: rgba(151,231,0,0.1); color: #97e700; border-color: rgba(151,231,0,0.4); }
+  .divider { height: 0.5px; background: rgba(255,255,255,0.07); margin: 1rem 0; }
+  .handle-input {
+    width: 100%; padding: 8px 12px; border-radius: 8px; font-size: 13px;
+    border: 0.5px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6);
+    font-family: 'Space Mono', monospace;
+  }
+  .handle-input:focus { outline: none; border-color: rgba(151,231,0,0.5); }
+
+  /* PREVIEW */
+  .preview-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .preview-label { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; align-self: flex-start; }
+  .phone {
+    width: 200px; height: 355px;
+    background: #11111f; border-radius: 18px;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    justify-content: space-between; padding: 18px 16px;
+    border: 0.5px solid rgba(151,231,0,0.1);
+  }
+  .phone.light { background: #f2f2f2; border-color: rgba(0,0,0,0.1); }
+  .phone.green { background: #97e700; border-color: transparent; }
+
+  .badge {
+    display: inline-block;
+    background: rgba(151,231,0,0.15);
+    border: 0.5px solid rgba(151,231,0,0.45);
+    border-radius: 4px; padding: 3px 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; color: #97e700; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .phone.light .badge { background: rgba(0,0,0,0.07); border-color: rgba(0,0,0,0.2); color: #3a6e00; }
+  .phone.green .badge { background: rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.2); color: #11111f; }
+
+  .gancho-text {
+    font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 700;
+    color: #fff; line-height: 1.2; margin: auto 0; word-break: break-word;
+  }
+  .phone.light .gancho-text { color: #11111f; }
+  .phone.green .gancho-text { color: #11111f; }
+
+  .bottom-row { display: flex; justify-content: space-between; align-items: flex-end; }
+  .handle-display { font-family: 'Space Mono', monospace; font-size: 7px; color: rgba(255,255,255,0.3); }
+  .phone.light .handle-display { color: rgba(0,0,0,0.3); }
+  .phone.green .handle-display { color: rgba(0,0,0,0.4); }
+
+  .hint { font-size: 10px; color: rgba(255,255,255,0.2); line-height: 1.5; text-align: center; max-width: 200px; }
+  .screenshot-btn {
+    width: 100%; max-width: 200px; padding: 10px;
+    background: rgba(151,231,0,0.1); border: 0.5px solid rgba(151,231,0,0.3);
+    border-radius: 10px; color: rgba(151,231,0,0.8);
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    text-align: center; cursor: pointer; letter-spacing: 0.03em;
+  }
+  .screenshot-btn:active { opacity: 0.7; }
+  .footer-hint { text-align: center; margin-top: 1.5rem; font-size: 9px; color: rgba(255,255,255,0.12); }
+</style>
+</head>
+<body>
+<h1>🌵 Gerador de Capa — @segueovinisantos</h1>
+
+<div class="layout">
+  <div class="controls">
+    <div class="ctrl-group">
+      <label class="ctrl-label">Texto do gancho</label>
+      <textarea id="gancho" placeholder="Digite o gancho do seu Reel...">Você não precisa se diminuir pra caber</textarea>
+    </div>
+
+    <div class="ctrl-group">
+      <label class="ctrl-label">Dia da jornada</label>
+      <div class="day-row">
+        <input type="number" id="dayInput" min="1" max="1826">
+        <span class="day-note">de 1.826 dias</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="ctrl-group">
+      <label class="ctrl-label">Fundo</label>
+      <div class="toggle-row">
+        <button class="tog active" onclick="setTheme('dark',this)">Escuro</button>
+        <button class="tog" onclick="setTheme('light',this)">Claro</button>
+        <button class="tog" onclick="setTheme('green',this)">Verde</button>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <label class="ctrl-label">Posição do selo</label>
+      <div class="toggle-row">
+        <button class="tog active" onclick="setBadgePos('left',this)">Esquerda</button>
+        <button class="tog" onclick="setBadgePos('right',this)">Direita</button>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <label class="ctrl-label">Seu arroba</label>
+      <input type="text" class="handle-input" id="handleInput" value="@segueovinisantos">
+    </div>
+  </div>
+
+  <div class="preview-col">
+    <div class="preview-label">Preview</div>
+    <div class="phone" id="phone">
+      <div id="badgeWrap" style="display:flex;justify-content:flex-start">
+        <div class="badge" id="badgeEl">DIA —</div>
+      </div>
+      <div class="gancho-text" id="ganchoEl">Você não precisa se diminuir pra caber</div>
+      <div class="bottom-row">
+        <div class="handle-display" id="handleEl">@segueovinisantos</div>
+        <div style="font-size:16px">🔥</div>
+      </div>
+    </div>
+    <div class="hint">Tire um print do preview e use como capa no Instagram</div>
+  </div>
+</div>
+
+<div class="footer-hint">O dia é calculado automaticamente todo dia que você abrir.</div>
+
+<script>
+(function(){
+  var start=new Date(2024,9,15), now=new Date(); now.setHours(0,0,0,0);
+  var elapsed=Math.floor((now-start)/864e5);
+  elapsed=Math.max(1,Math.min(elapsed,1826));
+  document.getElementById('dayInput').value=elapsed;
+  document.getElementById('badgeEl').textContent='DIA '+elapsed;
+})();
+
+document.getElementById('gancho').addEventListener('input',function(){
+  document.getElementById('ganchoEl').textContent=this.value||'Seu gancho aqui';
+});
+document.getElementById('dayInput').addEventListener('input',function(){
+  document.getElementById('badgeEl').textContent='DIA '+(this.value||'—');
+});
+document.getElementById('handleInput').addEventListener('input',function(){
+  document.getElementById('handleEl').textContent=this.value||'@segueovinisantos';
+});
+
+function setTheme(t,btn){
+  document.querySelectorAll('.tog').forEach(function(b){
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('setTheme')) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  var phone=document.getElementById('phone');
+  phone.classList.remove('dark','light','green');
+  phone.classList.add(t);
+}
+function setBadgePos(p,btn){
+  document.querySelectorAll('.tog').forEach(function(b){
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('setBadgePos')) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  document.getElementById('badgeWrap').style.justifyContent=p==='right'?'flex-end':'flex-start';
+}
+</script>
+</body>
+</html>
