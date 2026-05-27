@@ -153,12 +153,14 @@
         <div style="font-size:16px">🔥</div>
       </div>
     </div>
-    <div class="hint">Tire um print do preview e use como capa no Instagram</div>
+    <div class="hint">Ajuste o texto e baixe a capa pronta</div>
+    <button class="screenshot-btn" id="dlBtn" onclick="baixarCapa()">Baixar capa</button>
   </div>
 </div>
 
 <div class="footer-hint">O dia é calculado automaticamente todo dia que você abrir.</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 (function(){
   var start=new Date(2024,9,15), now=new Date(); now.setHours(0,0,0,0);
@@ -193,6 +195,21 @@ function setBadgePos(p,btn){
   });
   btn.classList.add('active');
   document.getElementById('badgeWrap').style.justifyContent=p==='right'?'flex-end':'flex-start';
+}
+function baixarCapa(){
+  var btn=document.getElementById('dlBtn');
+  btn.textContent='Gerando...';
+  btn.style.opacity='0.6';
+  var phone=document.getElementById('phone');
+  html2canvas(phone,{scale:4,useCORS:true,backgroundColor:null}).then(function(canvas){
+    var link=document.createElement('a');
+    var dia=document.getElementById('dayInput').value||'xxx';
+    link.download='capa-dia-'+dia+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent='Baixar capa';
+    btn.style.opacity='1';
+  });
 }
 </script>
 </body>
